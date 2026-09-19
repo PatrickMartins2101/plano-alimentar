@@ -1,35 +1,46 @@
 {
-  "id": "./",
+  "id": "/plano-alimentar/",
   "name": "Plano Alimentar Interativo",
   "short_name": "Plano Alimentar",
-  "start_url": "./index.html",
-  "scope": "./",
+  "description": "Plano alimentar interativo com refeições, quantidades e substituições.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "/plano-alimentar/",
+  "scope": "/plano-alimentar/",
   "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone"
+  ],
   "orientation": "portrait",
   "background_color": "#f3f6ef",
   "theme_color": "#176b52",
-  "lang": "pt-BR",
+  "prefer_related_applications": false,
+  "categories": [
+    "health",
+    "lifestyle"
+  ],
   "icons": [
     {
-      "src": "./icons/icon-192.png",
+      "src": "/plano-alimentar/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icons/icon-512.png",
+      "src": "/plano-alimentar/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icons/icon-maskable-192.png",
+      "src": "/plano-alimentar/icons/icon-maskable-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "./icons/icon-maskable-512.png",
+      "src": "/plano-alimentar/icons/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

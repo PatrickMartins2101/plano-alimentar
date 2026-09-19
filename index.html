@@ -35,8 +35,12 @@ footer{padding:18px;text-align:center;color:#60746c;font-size:13px}
   .food-qty{display:block}
 }
 </style>
-<link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#176b52"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Plano Alimentar"><link rel="apple-touch-icon" href="./icons/icon-192.png"></head>
+<link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#176b52"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Plano Alimentar"><link rel="apple-touch-icon" href="./icons/icon-192.png"><style>
+#pwaInstall{display:none;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:50;border:0;border-radius:14px;padding:13px 18px;background:#176b52;color:#fff;font-weight:800;font-size:15px;box-shadow:0 8px 25px #0004;cursor:pointer}
+#pwaInstall.show{display:block}
+</style></head>
 <body>
+<button id="pwaInstall" type="button" aria-label="Instalar Plano Alimentar">📲 Instalar aplicativo</button>
 <div class="wrap">
 <header>
   <div class="brand"><div class="logo">♡</div><div><h1>Plano Alimentar</h1><div class="sub">SAÚDE HOJE, MAIS CONQUISTAS AMANHÃ</div></div><div class="quote">“Disciplina hoje,<br>resultados amanhã.”</div></div>
@@ -335,9 +339,31 @@ function closeModal(){document.getElementById('modal').classList.remove('show')}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
 </script>
 <script>
-if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js").catch(()=>{});}
-let deferredPrompt=null;
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;});
-window.addEventListener("appinstalled",()=>{deferredPrompt=null;});
+(function(){
+  const installButton=document.getElementById("pwaInstall");
+  let deferredPrompt=null;
+  const isStandalone=window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+  function hide(){if(installButton)installButton.classList.remove("show")}
+  function show(){if(!isStandalone&&installButton)installButton.classList.add("show")}
+  if("serviceWorker" in navigator){
+    window.addEventListener("load",async function(){
+      try{
+        const registration=await navigator.serviceWorker.register("./sw.js",{scope:"./"});
+        await registration.update();
+      }catch(error){console.error("Falha ao registrar o Service Worker:",error);}
+    });
+  }
+  window.addEventListener("beforeinstallprompt",function(event){
+    event.preventDefault(); deferredPrompt=event; show();
+  });
+  if(installButton){
+    installButton.addEventListener("click",async function(){
+      if(!deferredPrompt)return;
+      deferredPrompt.prompt();
+      try{await deferredPrompt.userChoice;}finally{deferredPrompt=null;hide();}
+    });
+  }
+  window.addEventListener("appinstalled",function(){deferredPrompt=null;hide();});
+})();
 </script></body>
 </html>
