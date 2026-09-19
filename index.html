@@ -1,343 +1,620 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Plano Alimentar Interativo</title>
-<style>
-:root{--green:#176b52;--green2:#2d8a6a;--cream:#f8f5e9;--beige:#eee8d6;--gold:#d99a12;--ink:#17352d;--line:#d8d5c7}
-*{box-sizing:border-box} body{margin:0;background:linear-gradient(135deg,#f7f4e8,#eef5ee);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
-.wrap{max-width:1200px;margin:auto;padding:20px}
-header{background:#fffdf6;border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 8px 28px #17352d12}
-.brand{display:flex;align-items:center;gap:16px} .logo{width:64px;height:64px;border-radius:50%;background:var(--green);color:white;display:grid;place-items:center;font-size:32px}
-h1{margin:0;font-family:Georgia,serif;font-size:36px} .sub{letter-spacing:2px;font-size:13px;color:#507368}
-.quote{margin-left:auto;text-align:right;font-family:Georgia,serif;font-size:18px;font-style:italic}
-nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px} nav button{border:1px solid #bfc9be;background:#fff;border-radius:12px;padding:11px 15px;cursor:pointer;font-weight:700;color:var(--ink)} nav button.active,nav button:hover{background:var(--green);color:#fff}
-.hero{margin:16px 0;padding:16px 20px;border-radius:18px;background:#dcecdf;border:1px solid #c4d8c8;font-weight:700}
-.meal{margin:18px 0;background:#fffdf8;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 5px 18px #17352d0d}
-.meal-head{display:flex;align-items:center;gap:14px;padding:14px 18px;background:#f1f0e7} .meal-head h2{margin:0;font-size:23px} .time{background:var(--green);color:white;border-radius:12px;padding:9px 13px;font-weight:800;white-space:nowrap} .expand{margin-left:auto;border:0;background:#e5eadb;padding:9px 12px;border-radius:10px;font-weight:700;color:var(--green);cursor:pointer}
-.foods{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1px;background:#e7e4d8} .food{background:#fffdf8;padding:15px;text-align:center;min-height:210px;display:flex;flex-direction:column;align-items:center}
-.food-icon{font-size:48px;height:58px;display:grid;place-items:center} .food-name{font-weight:800;font-size:14px;line-height:1.2;margin-top:8px} .food-qty{font-size:13px;color:#53675f;margin:7px 0 12px;min-height:30px}
-.swap{margin-top:auto;background:var(--green);color:white;border:0;border-radius:10px;padding:9px 14px;font-weight:800;cursor:pointer} .swap:hover{background:var(--green2)} .no-subs{margin-top:auto;color:#999;font-size:12px}
-.notes{padding:15px 20px;background:#fff9e9;border-top:1px solid #eadfbd;font-size:14px} .notes ul{margin:6px 0 0 18px}
-footer{padding:18px;text-align:center;color:#60746c;font-size:13px}
-.modal{display:none;position:fixed;inset:0;background:#0008;z-index:20;align-items:center;justify-content:center;padding:18px} .modal.show{display:flex}
-.modal-box{background:#fffdf8;max-width:600px;width:100%;border-radius:20px;padding:22px;box-shadow:0 20px 60px #0005;max-height:85vh;overflow:auto} .modal-box h3{margin-top:0} .close{float:right;border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:18px;cursor:pointer} .subitem{padding:12px;border-bottom:1px solid #e4e0d5} .subitem:last-child{border-bottom:0}
-@media(max-width:700px){.wrap{padding:10px} h1{font-size:27px} .quote{display:none} .meal-head{align-items:flex-start;flex-wrap:wrap} .expand{margin-left:0} .foods{grid-template-columns:repeat(2,1fr)}}
-</style>
+    <meta charset="UTF-8">
 
-<style>
-@media(max-width:700px){
-  .meal-head{position:relative!important;top:auto!important}
-  .foods{position:relative;z-index:1}
-  .food-icon{flex-shrink:0}
-  .food-name{display:block;min-height:30px}
-  .food-qty{display:block}
-}
-</style>
-<link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#176b52"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Plano Alimentar"><link rel="apple-touch-icon" href="./icons/icon-192.png"></head>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#16745C"
+    >
+
+    <meta
+        name="description"
+        content="Plano alimentar interativo"
+    >
+
+    <title>Plano Alimentar</title>
+
+    <link
+        rel="manifest"
+        href="manifest.webmanifest"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="icons/icon-192.png"
+    >
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f5f3e8;
+            color: #173c35;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: #fffdf7;
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+
+            background: #16745c;
+            color: white;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 34px;
+        }
+
+        .title h1 {
+            font-family: Georgia, serif;
+            font-size: 38px;
+            color: #173c35;
+        }
+
+        .title p {
+            margin-top: 5px;
+            letter-spacing: 3px;
+            color: #648078;
+            font-size: 13px;
+        }
+
+        .phrase {
+            max-width: 260px;
+            text-align: right;
+
+            font-family: Georgia, serif;
+            font-style: italic;
+
+            font-size: 18px;
+            color: #173c35;
+        }
+
+        .menu {
+            background: #fffdf7;
+            border-radius: 20px;
+            padding: 12px;
+
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .menu button {
+            border: 1px solid #cbd5cf;
+
+            background: white;
+            color: #173c35;
+
+            padding: 13px 18px;
+
+            border-radius: 15px;
+
+            font-weight: bold;
+            font-size: 15px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .menu button:hover {
+            background: #e7f1eb;
+        }
+
+        .menu button.active {
+            background: #16745c;
+            color: white;
+            border-color: #16745c;
+        }
+
+        .welcome {
+            background: #dceee2;
+
+            border-radius: 20px;
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+
+            font-size: 17px;
+            font-weight: bold;
+
+            line-height: 1.5;
+        }
+
+        .meal {
+            background: #fffdf7;
+
+            border-radius: 24px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.07);
+        }
+
+        .meal-header {
+            padding: 20px;
+
+            background: #f3f1e7;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+        }
+
+        .meal-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .time {
+            background: #16745c;
+            color: white;
+
+            border-radius: 14px;
+
+            padding: 10px 15px;
+
+            font-weight: bold;
+        }
+
+        .meal-title h2 {
+            font-size: 25px;
+        }
+
+        .meal-content {
+            padding: 25px;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(150px, 1fr));
+
+            gap: 20px;
+        }
+
+        .food {
+            text-align: center;
+
+            border-right: 1px solid #e4e1d7;
+
+            padding: 10px;
+        }
+
+        .food:last-child {
+            border-right: none;
+        }
+
+        .food-icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
+        .food h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .food p {
+            color: #777;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .substitute {
+            margin-top: 15px;
+
+            border: none;
+
+            background: #16745c;
+            color: white;
+
+            padding: 10px 18px;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+        }
+
+        .observations {
+            background: #fff8e8;
+
+            padding: 20px;
+
+            border-top: 1px solid #e8dfc8;
+
+            line-height: 1.6;
+        }
+
+        @media (max-width: 700px) {
+
+            .container {
+                padding: 10px;
+            }
+
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .logo-area {
+                flex-direction: column;
+            }
+
+            .phrase {
+                text-align: center;
+            }
+
+            .title h1 {
+                font-size: 30px;
+            }
+
+            .menu {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+
+            .menu button {
+                white-space: nowrap;
+            }
+
+            .meal-content {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .food {
+                border-right: none;
+                border-bottom: 1px solid #e4e1d7;
+                padding-bottom: 20px;
+            }
+
+            .food:last-child {
+                border-bottom: none;
+            }
+        }
+    </style>
+</head>
+
 <body>
-<div class="wrap">
-<header>
-  <div class="brand"><div class="logo">♡</div><div><h1>Plano Alimentar</h1><div class="sub">SAÚDE HOJE, MAIS CONQUISTAS AMANHÃ</div></div><div class="quote">“Disciplina hoje,<br>resultados amanhã.”</div></div>
-  <nav id="nav"></nav>
-</header>
-<div class="hero">🌿 <b>Use os botões “Substituir”</b> para abrir as opções de substituição de cada alimento. Você também pode navegar diretamente por cada refeição.</div>
-<div id="content">
-    <section class="meal" id="cafe">
-      <div class="meal-head"><div class="time">☀️ 07:30</div><h2>Café da manhã</h2><button class="expand" onclick="scrollToMeal('cafe')">Ver substituições</button></div>
-      <div class="foods">
-        <article class="food">
-          <div class="food-icon">🥛</div>
-          <div class="food-name">Leite de vaca UHT desnatado</div>
-          <div class="food-qty">1 copo americano duplo (240 ml)</div>
-          <button class="swap" data-subs='[&quot;Leite de vaca UHT desnatado — 1 copo americano duplo (480 ml)&quot;, &quot;Ricota — 2 fatias médias (60 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">💪</div>
-          <div class="food-name">Whey Protein isolado sabor cacau</div>
-          <div class="food-qty">0,5 colher de medida (12,5 g)</div>
-          <span class="no-subs">Sem substituições</span>
-        </article>
-        <article class="food">
-          <div class="food-icon">🍞</div>
-          <div class="food-name">Pão de forma 100% integral</div>
-          <div class="food-qty">1 fatia (25 g)</div>
-          <button class="swap" data-subs='[&quot;Tapioca — 2 colheres de sopa (34 g)&quot;, &quot;Pão francês (pão de sal/pão carequinha) — 0,5 unidade (25 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🧀</div>
-          <div class="food-name">Queijo minas frescal</div>
-          <div class="food-qty">2 fatias (60 g)</div>
-          <button class="swap" data-subs='[&quot;Leite de vaca desnatado UHT — 2 copos americanos duplos (480 ml)&quot;, &quot;Queijo cottage (1% de gordura) — 2 fatias (74 g)&quot;, &quot;Ricota — 2 fatias médias (60 g)&quot;, &quot;Queijo muçarela/mussarela light — 2 fatias médias (40 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🍌</div>
-          <div class="food-name">Banana</div>
-          <div class="food-qty">1 unidade média (40 g)</div>
-          <button class="swap" data-subs='[&quot;Mamão — 1 fatia pequena (100 g)&quot;, &quot;Abacaxi — 1 fatia média (75 g)&quot;, &quot;Morango — 10 unidades médias (120 g)&quot;, &quot;Kiwi — 1 unidade (75 g)&quot;, &quot;Maçã Argentina — 1 unidade pequena (80 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🌾</div>
-          <div class="food-name">Aveia</div>
-          <div class="food-qty">1 colher de sopa cheia (15 g)</div>
-          <button class="swap" data-subs='[&quot;Semente de chia — 1 colher de sopa cheia (15 g)&quot;, &quot;Granola sem açúcar — 1 colher de sopa (10 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article></div>
-      <div class="notes"><b>Observações</b><ul><li>Evitar tapioca diariamente; consumir no máximo 2x/semana (baixa fibra, alto índice glicêmico).</li></ul></div>
+
+<div class="container">
+
+    <header>
+
+        <div class="logo-area">
+
+            <div class="logo">
+                ♡
+            </div>
+
+            <div class="title">
+
+                <h1>
+                    Plano Alimentar
+                </h1>
+
+                <p>
+                    SAÚDE HOJE, MAIS CONQUISTAS AMANHÃ
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="phrase">
+
+            “Disciplina hoje,
+            resultados amanhã.”
+
+        </div>
+
+    </header>
+
+
+    <nav class="menu">
+
+        <button class="active">
+            🏠 Visão geral
+        </button>
+
+        <button>
+            🌅 07:30 — Café da manhã
+        </button>
+
+        <button>
+            🍽️ 12:00 — Almoço
+        </button>
+
+        <button>
+            🍎 15:00 — Lanche da tarde
+        </button>
+
+        <button>
+            🌙 20:00 — Jantar
+        </button>
+
+        <button>
+            🍳 20:00 — Opção de jantar
+        </button>
+
+        <button>
+            🥛 20:00 — Lanche com whey
+        </button>
+
+    </nav>
+
+
+    <section class="welcome">
+
+        🌿 Use os botões acima para navegar entre as
+        refeições do seu plano alimentar.
+
     </section>
-    <section class="meal" id="almoco">
-      <div class="meal-head"><div class="time">🍽️ 12:00</div><h2>Almoço</h2><button class="expand" onclick="scrollToMeal('almoco')">Ver substituições</button></div>
-      <div class="foods">
-        <article class="food">
-          <div class="food-icon">🍗</div>
-          <div class="food-name">Peito de frango sem pele cozido</div>
-          <div class="food-qty">70 g</div>
-          <button class="swap" data-subs='[&quot;Atum cozido — 1 posta média (100 g)&quot;, &quot;Filé de peixe cozido — 1 filé médio (120 g)&quot;, &quot;Salmão cozido — 70 g&quot;, &quot;Filé de frango grelhado — 70 g&quot;, &quot;Carne suína — 100 g&quot;, &quot;Carne moída refogada — 2 colheres de sopa cheias (50 g)&quot;, &quot;Carne cozida — 100 g&quot;, &quot;Carne moída refogada — 2 colheres de sopa cheias (50 g)&quot;, &quot;Sardinha assada — 1 fatia média (60 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🍚</div>
-          <div class="food-name">Arroz integral cozido</div>
-          <div class="food-qty">4 colheres de sopa cheias (80 g)</div>
-          <button class="swap" data-subs='[&quot;Macarrão integral cozido — 2 colheres de servir cheias (100 g)&quot;, &quot;Arroz branco cozido — 4 colheres de sopa cheias (100 g)&quot;, &quot;Mandioca (aipim, macaxeira, mandioca) cozida — 2 colheres de sopa cheias (60 g)&quot;, &quot;Batata baroa (mandioquinha, batata salsa, cenoura amarela) — 8 colheres de sopa cheias (160 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🫘</div>
-          <div class="food-name">Feijão carioca cozido</div>
-          <div class="food-qty">1 concha cheia (140 g)</div>
-          <button class="swap" data-subs='[&quot;Feijão preto cozido — 1,8 colher de servir cheia (61,3 g)&quot;, &quot;Feijão branco cozido — 1,8 colher de sopa cheia (29,8 g)&quot;, &quot;Feijão fradinho cozido — 1,8 colher de servir cheia (61,3 g)&quot;, &quot;Lentilha cozida — 1,8 colher de servir cheia (61,3 g)&quot;, &quot;Grão-de-bico cozido — 1,8 colher de sopa (42 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🥒</div>
-          <div class="food-name">Abobrinha italiana (abobrinha, abobrinha verde)</div>
-          <div class="food-qty">3 colheres de sopa cheias, picada (90 g)</div>
-          <button class="swap" data-subs='[&quot;Abóbora cabotian (japonesa) — 1 colher de sopa cheia, picada (36 g)&quot;, &quot;Abóbora moranga — 3 colheres de sopa cheias, picada (108 g)&quot;, &quot;Beterraba — 1 colher de sopa cheia (25 g)&quot;, &quot;Berinjela — 6 colheres de sopa cheias (60 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🥬</div>
-          <div class="food-name">Alface</div>
-          <div class="food-qty">À vontade</div>
-          <span class="no-subs">Sem substituições</span>
-        </article>
-        <article class="food">
-          <div class="food-icon">🥕</div>
-          <div class="food-name">Cenoura cozida</div>
-          <div class="food-qty">1 colher de sopa cheia, picada (25 g)</div>
-          <button class="swap" data-subs='[&quot;Beterraba cozida — 1 fatia pequena (6 g)&quot;, &quot;Berinjela cozida — 1 colher de sopa cheia (25 g)&quot;, &quot;Cebola branca cozida — 1 colher de sopa cheia, picada (10 g)&quot;, &quot;Couve-flor cozida — 1 ramo pequeno (30 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🥦</div>
-          <div class="food-name">Brócolis</div>
-          <div class="food-qty">2 ramos (76 g)</div>
-          <span class="no-subs">Sem substituições</span>
-        </article>
-        <article class="food">
-          <div class="food-icon">🍅</div>
-          <div class="food-name">Tomate</div>
-          <div class="food-qty">4 fatias médias (60 g)</div>
-          <button class="swap" data-subs='[&quot;Tomate-cereja — 5 unidades (50 g)&quot;, &quot;Pepino — 2 colheres de sopa picado (58 g)&quot;, &quot;Pimentão amarelo — 4 fatias (28 g)&quot;, &quot;Pimentão verde — 4 fatias (20 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🌿</div>
-          <div class="food-name">Rúcula (pinchão)</div>
-          <div class="food-qty">À vontade</div>
-          <button class="swap" data-subs='[&quot;Agrião (agrião d&#x27;água) — à vontade&quot;, &quot;Repolho roxo cru — à vontade&quot;, &quot;Almeirão — à vontade&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🫒</div>
-          <div class="food-name">Azeite de oliva extravirgem</div>
-          <div class="food-qty">1 colher de sobremesa (5 ml)</div>
-          <span class="no-subs">Sem substituições</span>
-        </article>
-        <article class="food">
-          <div class="food-icon">🍊</div>
-          <div class="food-name">Laranja</div>
-          <div class="food-qty">1 unidade média (180 g)</div>
-          <button class="swap" data-subs='[&quot;Kiwi — 2 unidades (150 g)&quot;, &quot;Banana — 1 unidade grande (55 g)&quot;, &quot;Pera — 1 unidade grande (190 g)&quot;, &quot;Mexerica murcote — 1 unidade média (135 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article></div>
-      <div class="notes"><b>Observações</b><ul><li>Consumir 3x na semana: sardinha, atum, salmão.</li></ul></div>
+
+
+    <section class="meal">
+
+        <div class="meal-header">
+
+            <div class="meal-title">
+
+                <span class="time">
+                    🌅 07:30
+                </span>
+
+                <h2>
+                    Café da manhã
+                </h2>
+
+            </div>
+
+            <button class="substitute">
+                Ver substituições
+            </button>
+
+        </div>
+
+
+        <div class="meal-content">
+
+
+            <div class="food">
+
+                <div class="food-icon">
+                    🥛
+                </div>
+
+                <h3>
+                    Leite de vaca UHT desnatado
+                </h3>
+
+                <p>
+                    1 copo americano duplo
+                    (240 ml)
+                </p>
+
+                <button class="substitute">
+                    Substituir
+                </button>
+
+            </div>
+
+
+            <div class="food">
+
+                <div class="food-icon">
+                    💪
+                </div>
+
+                <h3>
+                    Whey Protein isolado
+                </h3>
+
+                <p>
+                    0,5 colher de medida
+                    (12,5 g)
+                </p>
+
+            </div>
+
+
+            <div class="food">
+
+                <div class="food-icon">
+                    🍞
+                </div>
+
+                <h3>
+                    Pão de forma 100% integral
+                </h3>
+
+                <p>
+                    1 fatia (25 g)
+                </p>
+
+                <button class="substitute">
+                    Substituir
+                </button>
+
+            </div>
+
+
+            <div class="food">
+
+                <div class="food-icon">
+                    🧀
+                </div>
+
+                <h3>
+                    Queijo minas frescal
+                </h3>
+
+                <p>
+                    2 fatias (60 g)
+                </p>
+
+                <button class="substitute">
+                    Substituir
+                </button>
+
+            </div>
+
+
+            <div class="food">
+
+                <div class="food-icon">
+                    🍌
+                </div>
+
+                <h3>
+                    Banana
+                </h3>
+
+                <p>
+                    1 unidade média
+                    (90 g)
+                </p>
+
+                <button class="substitute">
+                    Substituir
+                </button>
+
+            </div>
+
+
+            <div class="food">
+
+                <div class="food-icon">
+                    🌾
+                </div>
+
+                <h3>
+                    Aveia
+                </h3>
+
+                <p>
+                    1 colher de sopa cheia
+                    (15 g)
+                </p>
+
+                <button class="substitute">
+                    Substituir
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="observations">
+
+            <strong>
+                Observações
+            </strong>
+
+            <p>
+                • Evitar tapioca diariamente;
+                consumir no máximo 2x/semana
+                (baixa fibra, alto índice glicêmico).
+            </p>
+
+        </div>
+
     </section>
-    <section class="meal" id="lanche">
-      <div class="meal-head"><div class="time">🍎 15:00</div><h2>Lanche da tarde</h2><button class="expand" onclick="scrollToMeal('lanche')">Ver substituições</button></div>
-      <div class="foods">
-        <article class="food">
-          <div class="food-icon">🍞</div>
-          <div class="food-name">Pão de forma 100% integral</div>
-          <div class="food-qty">1 fatia (25 g)</div>
-          <button class="swap" data-subs='[&quot;Tapioca — 2 colheres de sopa (34 g)&quot;, &quot;Pão francês — 0,5 unidade (25 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🍗</div>
-          <div class="food-name">Frango desfiado</div>
-          <div class="food-qty">3 colheres de sopa cheias (60 g)</div>
-          <button class="swap" data-subs='[&quot;Atum — 60 g&quot;, &quot;Sardinha — 60 g&quot;, &quot;Patinho moído — 90 g&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🥬</div>
-          <div class="food-name">Alface</div>
-          <div class="food-qty">À vontade</div>
-          <span class="no-subs">Sem substituições</span>
-        </article>
-        <article class="food">
-          <div class="food-icon">🍅</div>
-          <div class="food-name">Tomate picado</div>
-          <div class="food-qty">1 colher de sopa cheia (10 g)</div>
-          <button class="swap" data-subs='[&quot;Tomate-cereja — 5 unidades (50 g)&quot;, &quot;Pepino — 2 colheres de sopa picado (58 g)&quot;, &quot;Pimentão amarelo — 4 fatias (28 g)&quot;, &quot;Pimentão verde — 4 fatias (20 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🍈</div>
-          <div class="food-name">Mamão</div>
-          <div class="food-qty">1 fatia pequena (100 g)</div>
-          <button class="swap" data-subs='[&quot;Maçã Argentina — 1 unidade pequena (80 g)&quot;, &quot;Pera — 1 unidade média (110 g)&quot;, &quot;Goiaba vermelha — 1 unidade pequena (105 g)&quot;, &quot;Morango — 10 unidades médias (120 g)&quot;, &quot;Banana — 1 unidade média (40 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🌱</div>
-          <div class="food-name">Semente de chia</div>
-          <div class="food-qty">1 colher de sopa (15 g)</div>
-          <span class="no-subs">Sem substituições</span>
-        </article>
-        <article class="food">
-          <div class="food-icon">🥜</div>
-          <div class="food-name">Castanha de caju</div>
-          <div class="food-qty">4 unidades (10 g)</div>
-          <button class="swap" data-subs='[&quot;Castanha do Brasil (castanha do Pará/castanha da Amazônia) — 2 unidades (8 g)&quot;, &quot;Amêndoa — 8 unidades (8 g)&quot;, &quot;Noz — 2 unidades (10 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article></div>
-      
-    </section>
-    <section class="meal" id="jantar">
-      <div class="meal-head"><div class="time">🌙 20:00</div><h2>Jantar</h2><button class="expand" onclick="scrollToMeal('jantar')">Ver substituições</button></div>
-      <div class="foods">
-        <article class="food">
-          <div class="food-icon">🍗</div>
-          <div class="food-name">Peito de frango sem pele cozido</div>
-          <div class="food-qty">70 g</div>
-          <button class="swap" data-subs='[&quot;Atum cozido — 1 posta média (100 g)&quot;, &quot;Filé de peixe cozido — 1 filé pequeno (100 g)&quot;, &quot;Salmão cozido — 1 filé médio (100 g)&quot;, &quot;Filé mignon grelhado — 70 g&quot;, &quot;Carne cozida — 100 g&quot;, &quot;Carne moída refogada — 2 colheres de sopa cheias (50 g)&quot;, &quot;Sardinha assada — 1 fatia média (60 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🥔</div>
-          <div class="food-name">Batata cozida</div>
-          <div class="food-qty">4 colheres de sopa cheias (120 g)</div>
-          <button class="swap" data-subs='[&quot;Arroz branco cozido — 4 colheres de sopa cheias (80 g)&quot;, &quot;Arroz integral cozido — 4 colheres de sopa cheias (80 g)&quot;, &quot;Mandioca — 4 colheres de sopa cheias (140 g)&quot;, &quot;Batata baroa — 8 colheres de sopa cheias (160 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🥒</div>
-          <div class="food-name">Abobrinha italiana</div>
-          <div class="food-qty">3 colheres de sopa cheias (90 g)</div>
-          <button class="swap" data-subs='[&quot;Abóbora cabotian — 1 colher de sopa cheia, picada (36 g)&quot;, &quot;Abóbora moranga — 3 colheres de sopa cheias, picada (108 g)&quot;, &quot;Beterraba — 1 colher de sopa cheia (25 g)&quot;, &quot;Berinjela — 6 colheres de sopa cheias (60 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🥬</div>
-          <div class="food-name">Alface</div>
-          <div class="food-qty">À vontade</div>
-          <span class="no-subs">Sem substituições</span>
-        </article>
-        <article class="food">
-          <div class="food-icon">🥕</div>
-          <div class="food-name">Cenoura cozida</div>
-          <div class="food-qty">1 colher de sopa cheia, picada (25 g)</div>
-          <button class="swap" data-subs='[&quot;Beterraba cozida — 1 fatia pequena (6 g)&quot;, &quot;Berinjela cozida — 1 colher de sopa cheia (25 g)&quot;, &quot;Cebola branca cozida — 1 colher de sopa cheia, picada (10 g)&quot;, &quot;Couve-flor cozida — 1 ramo pequeno (30 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🥦</div>
-          <div class="food-name">Brócolis</div>
-          <div class="food-qty">2 ramos (76 g)</div>
-          <span class="no-subs">Sem substituições</span>
-        </article>
-        <article class="food">
-          <div class="food-icon">🍅</div>
-          <div class="food-name">Tomate</div>
-          <div class="food-qty">4 fatias médias (60 g)</div>
-          <button class="swap" data-subs='[&quot;Tomate-cereja — 5 unidades (50 g)&quot;, &quot;Pepino — 2 colheres de sopa picado (58 g)&quot;, &quot;Pimentão amarelo — 4 fatias (28 g)&quot;, &quot;Pimentão verde — 4 fatias (20 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🌿</div>
-          <div class="food-name">Rúcula</div>
-          <div class="food-qty">À vontade</div>
-          <button class="swap" data-subs='[&quot;Agrião — à vontade&quot;, &quot;Repolho roxo cru — à vontade&quot;, &quot;Almeirão — à vontade&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🫒</div>
-          <div class="food-name">Azeite de oliva extravirgem</div>
-          <div class="food-qty">1 colher de sobremesa (5 ml)</div>
-          <span class="no-subs">Sem substituições</span>
-        </article></div>
-      
-    </section>
-    <section class="meal" id="opcao">
-      <div class="meal-head"><div class="time">🍳 20:00</div><h2>Opção de jantar</h2><button class="expand" onclick="scrollToMeal('opcao')">Ver substituições</button></div>
-      <div class="foods">
-        <article class="food">
-          <div class="food-icon">🍳</div>
-          <div class="food-name">Omelete (1 ovo + 2 claras)</div>
-          <div class="food-qty">1 unidade (50 g)</div>
-          <span class="no-subs">Sem substituições</span>
-        </article>
-        <article class="food">
-          <div class="food-icon">🥚</div>
-          <div class="food-name">Clara de ovo</div>
-          <div class="food-qty">2 unidades (60 g)</div>
-          <span class="no-subs">Sem substituições</span>
-        </article>
-        <article class="food">
-          <div class="food-icon">🍗</div>
-          <div class="food-name">Frango desfiado</div>
-          <div class="food-qty">2 colheres de sopa cheias (40 g)</div>
-          <button class="swap" data-subs='[&quot;Queijo muçarela/mussarela — 2 fatias médias (40 g)&quot;, &quot;Carne moída refogada — 2 colheres de sopa cheias (50 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🍅</div>
-          <div class="food-name">Tomate picado</div>
-          <div class="food-qty">1 colher de sopa cheia (10 g)</div>
-          <span class="no-subs">Sem substituições</span>
-        </article></div>
-      
-    </section>
-    <section class="meal" id="whey">
-      <div class="meal-head"><div class="time">🥛 20:00</div><h2>Lanche com whey</h2><button class="expand" onclick="scrollToMeal('whey')">Ver substituições</button></div>
-      <div class="foods">
-        <article class="food">
-          <div class="food-icon">💪</div>
-          <div class="food-name">Whey Protein</div>
-          <div class="food-qty">1 colher de medida (25 g)</div>
-          <span class="no-subs">Sem substituições</span>
-        </article>
-        <article class="food">
-          <div class="food-icon">🥛</div>
-          <div class="food-name">Leite de vaca desnatado UHT</div>
-          <div class="food-qty">1 xícara de chá (200 ml)</div>
-          <span class="no-subs">Sem substituições</span>
-        </article>
-        <article class="food">
-          <div class="food-icon">🥑</div>
-          <div class="food-name">Abacate</div>
-          <div class="food-qty">80 g</div>
-          <button class="swap" data-subs='[&quot;Manga — 0,5 unidade (168 g)&quot;, &quot;Mamão — 1 fatia grande (290 g)&quot;, &quot;Goiaba vermelha — 2 unidades médias (260 g)&quot;, &quot;Banana — 2 unidades médias (130 g)&quot;]' onclick="showSubs(this)">Substituir ▾</button>
-        </article>
-        <article class="food">
-          <div class="food-icon">🌾</div>
-          <div class="food-name">Aveia</div>
-          <div class="food-qty">1 colher de sopa cheia (15 g)</div>
-          <span class="no-subs">Sem substituições</span>
-        </article></div>
-      
-    </section></div>
-<footer>Prescrição em 01/09/2026 • Dra. Jéssica De Cássia Vaz Oliveira<br>Esta interface é uma reprodução visual/interativa das informações fornecidas nas imagens.</footer>
+
 </div>
-<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="modal-box"><button class="close" onclick="closeModal()">×</button><h3 id="modalTitle">Opções de substituição</h3><div id="modalBody"></div></div></div>
+
+
 <script>
-const meals = [{"id": "cafe", "title": "Café da manhã", "time": "07:30", "icon": "☀️"}, {"id": "almoco", "title": "Almoço", "time": "12:00", "icon": "🍽️"}, {"id": "lanche", "title": "Lanche da tarde", "time": "15:00", "icon": "🍎"}, {"id": "jantar", "title": "Jantar", "time": "20:00", "icon": "🌙"}, {"id": "opcao", "title": "Opção de jantar", "time": "20:00", "icon": "🍳"}, {"id": "whey", "title": "Lanche com whey", "time": "20:00", "icon": "🥛"}];
-const nav=document.getElementById('nav');
-nav.innerHTML='<button class="active" onclick="goHome(this)">🏠 Visão geral</button>'+meals.map(m=>`<button onclick="go('${m.id}',this)">${m.icon} ${m.time} — ${m.title}</button>`).join('');
-function go(id,btn){document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'})}
-function goHome(btn){document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
-function scrollToMeal(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'})}
-function showSubs(btn){const subs=JSON.parse(btn.dataset.subs);document.getElementById('modalTitle').textContent='Opções de substituição';document.getElementById('modalBody').innerHTML=subs.map(s=>`<div class="subitem">• ${s}</div>`).join('');document.getElementById('modal').classList.add('show')}
-function closeModal(){document.getElementById('modal').classList.remove('show')}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+    // Registro básico do Service Worker
+    // para transformar o site em PWA.
+
+    if ("serviceWorker" in navigator) {
+
+        window.addEventListener(
+            "load",
+            function () {
+
+                navigator.serviceWorker
+                    .register("sw.js")
+                    .catch(
+                        function (error) {
+
+                            console.log(
+                                "Erro ao registrar Service Worker:",
+                                error
+                            );
+
+                        }
+                    );
+
+            }
+        );
+
+    }
+
 </script>
-<script>
-if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js").catch(()=>{});}
-let deferredPrompt=null;
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;});
-window.addEventListener("appinstalled",()=>{deferredPrompt=null;});
-</script></body>
+
+</body>
 </html>
