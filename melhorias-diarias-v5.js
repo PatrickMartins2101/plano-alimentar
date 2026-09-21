@@ -45,9 +45,14 @@
     const water = read(WATER_KEY, { goal: 2500, days: {}, settings: {} });
     water.days = water.days && typeof water.days === "object" ? water.days : {};
     const marker = localStorage.getItem(WATER_MARKER);
-    if (marker !== today) {
+    if (!marker) {
+      // Primeira execução desta versão: preservar o registro de hoje.
       if (!water.days[today]) water.days[today] = emptyWaterDay();
-      else water.days[today] = { total: 0, entries: [] };
+      write(WATER_KEY, water);
+      localStorage.setItem(WATER_MARKER, today);
+    } else if (marker !== today) {
+      // Novo dia: somente o dia atual é zerado; histórico anterior permanece.
+      water.days[today] = emptyWaterDay();
       write(WATER_KEY, water);
       localStorage.setItem(WATER_MARKER, today);
       window.dispatchEvent(new CustomEvent("planoAlimentar:diaMudou"));
@@ -110,7 +115,6 @@
       });
     }
 
-    // Também mantém o resumo/checklist textual que possa existir fora do módulo principal.
     document.querySelectorAll("[data-meal-time]").forEach(el => {
       const meal = effective.find(m => m.id === el.dataset.mealTime);
       if (meal) el.textContent = meal.time;
@@ -138,9 +142,7 @@
 
     // O editor salva no localStorage na mesma aba, então o evento storage não é suficiente.
     // A verificação curta garante que qualquer alteração de horário apareça em todos os pontos.
-    setInterval(() => {
-      refreshDailyUI();
-    }, 1000);
+    setInterval(refreshDailyUI, 1000);
 
     const observer = new MutationObserver(() => {
       fixPhotoInput();
