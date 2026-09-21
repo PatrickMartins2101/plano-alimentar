@@ -1,5 +1,5 @@
-/* PLANO ALIMENTAR — SERVICE WORKER V22 (ESTABILIDADE) */
-const CACHE_NAME = "plano-alimentar-pwa-v22";
+/* PLANO ALIMENTAR — SERVICE WORKER V23 */
+const CACHE_NAME = "plano-alimentar-pwa-v23";
 const BASE = "/plano-alimentar/";
 const CORE_ASSETS = [
   BASE,
@@ -19,7 +19,8 @@ const CORE_ASSETS = [
   BASE + "backup-restauracao.js",
   BASE + "notificacoes.js",
   BASE + "receita-foto-ocr.js",
-  BASE + "dashboard-progresso.js"
+  BASE + "dashboard-progresso.js",
+  BASE + "integracao-final-v7.js"
 ];
 
 self.addEventListener("install", event => {
@@ -38,34 +39,21 @@ self.addEventListener("install", event => {
 self.addEventListener("activate", event => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(
-      keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-    );
+    await Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)));
     await self.clients.claim();
   })());
 });
 
-/*
- * IMPORTANTE:
- * V22 remove a injeção dos módulos experimentais V6/V5 que estavam
- * sendo executados junto com o painel geral e podiam causar ciclo de
- * MutationObserver/setInterval e travar o PWA na abertura.
- *
- * O painel geral continua sendo o ponto único de entrada dos módulos
- * principais e já carrega os recursos estáveis necessários.
- */
 async function getAppPage(request) {
   try {
     const response = await fetch(request, { cache: "no-store" });
     if (response && response.ok) return response;
   } catch (_) {}
-
   return caches.match(BASE + "index.html");
 }
 
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
-
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
 
@@ -77,13 +65,10 @@ self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
-
       return fetch(event.request).then(response => {
         if (response && response.status === 200) {
           const copy = response.clone();
-          caches.open(CACHE_NAME)
-            .then(cache => cache.put(event.request, copy))
-            .catch(() => {});
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy)).catch(() => {});
         }
         return response;
       }).catch(() => caches.match(BASE + "index.html"));
