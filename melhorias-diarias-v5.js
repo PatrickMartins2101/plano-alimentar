@@ -1,11 +1,4 @@
-/* MELHORIAS DIÁRIAS V5 — correção integrada de rotina diária
-   - Virada real à meia-noite no horário local do dispositivo.
-   - Checklist começa novamente a cada novo dia.
-   - Água fica separada por dia e zera no novo dia.
-   - Horários editados são refletidos no plano, navegação e checklist.
-   - Fotos podem ser escolhidas da galeria/arquivos do dispositivo.
-   - Não altera o Dashboard V4.
-*/
+/* MELHORIAS DIÁRIAS V5 — rotina diária estável */
 (() => {
   "use strict";
 
@@ -56,28 +49,32 @@
 
   function resetDailyStoresIfNeeded() {
     const today = localKey();
+    let changed = false;
 
     const water = read(WATER_KEY, { goal: 2500, days: {}, settings: {} });
     water.days = water.days && typeof water.days === "object" ? water.days : {};
     const marker = localStorage.getItem(WATER_MARKER);
     if (!marker) {
-      // Primeira execução desta versão: preservar o registro de hoje.
       if (!water.days[today]) water.days[today] = emptyWaterDay();
       write(WATER_KEY, water);
       localStorage.setItem(WATER_MARKER, today);
     } else if (marker !== today) {
-      // Novo dia: somente o dia atual é zerado; histórico anterior permanece.
       water.days[today] = emptyWaterDay();
       write(WATER_KEY, water);
       localStorage.setItem(WATER_MARKER, today);
-      window.dispatchEvent(new CustomEvent("planoAlimentar:diaMudou"));
+      changed = true;
     }
 
     const check = read(CHECK_KEY, {});
     if (check.data !== today) {
       write(CHECK_KEY, { data: today, itens: {} });
       resetChecklistUI();
-      window.dispatchEvent(new CustomEvent("planoAlimentar:checklistNovoDia"));
+      changed = true;
+    }
+
+    if (changed) {
+      window.dispatchEvent(new CustomEvent("planoAlimentar:diaMudou", { detail: { data: today } }));
+      window.dispatchEvent(new CustomEvent("planoAlimentar:checklistNovoDia", { detail: { data: today } }));
     }
   }
 
@@ -86,11 +83,9 @@
     const next = new Date(now);
     next.setHours(24, 0, 1, 0);
     const delay = Math.max(1000, next.getTime() - now.getTime());
-    setTimeout(() => {
+    window.setTimeout(() => {
       resetDailyStoresIfNeeded();
-      // Recarregar uma única vez garante que módulos com estado em memória
-      // (como o checklist) também iniciem o novo dia corretamente.
-      location.reload();
+      scheduleMidnightReset();
     }, delay);
   }
 
@@ -111,14 +106,15 @@
       if (section) {
         const title = section.querySelector(".meal-head h2");
         const time = section.querySelector(".meal-head .time");
-        if (title && meal.title) title.textContent = meal.title;
-        if (time && meal.time) time.textContent = `${meal.icon || baseIcon(meal.id)} ${meal.time}`;
+        if (title && meal.title && title.textContent !== meal.title) title.textContent = meal.title;
+        const desiredTime = `${meal.icon || baseIcon(meal.id)} ${meal.time}`;
+        if (time && meal.time && time.textContent !== desiredTime) time.textContent = desiredTime;
       }
 
       if (meal.check) {
         const item = document.querySelector(`#checklistDiarioV2 [data-check="${meal.check}"]`);
         const detail = item?.querySelector(".cd-time");
-        if (detail) detail.textContent = meal.time || "Hoje";
+        if (detail && meal.time && detail.textContent !== meal.time) detail.textContent = meal.time;
       }
     });
 
@@ -127,22 +123,22 @@
       const buttons = [...nav.querySelectorAll("button")];
       effective.forEach((meal, index) => {
         const button = buttons[index + 1] || buttons[index];
-        if (button) button.textContent = `${meal.icon || baseIcon(meal.id)} ${meal.time || "—"} — ${meal.title}`;
+        const desired = `${meal.icon || baseIcon(meal.id)} ${meal.time || "—"} — ${meal.title}`;
+        if (button && button.textContent !== desired) button.textContent = desired;
       });
     }
 
     document.querySelectorAll("[data-meal-time]").forEach(el => {
       const meal = effective.find(m => m.id === el.dataset.mealTime);
-      if (meal) el.textContent = meal.time;
+      if (meal && el.textContent !== meal.time) el.textContent = meal.time;
     });
   }
 
   function fixPhotoInput() {
     document.querySelectorAll('input[type="file"][accept*="image"]').forEach(input => {
-      // Não usar capture: no Android isso pode forçar a câmera e esconder a galeria.
-      input.removeAttribute("capture");
+      // Não remove capture: o módulo de fotos usa um campo exclusivo para câmera
+      // e outro para galeria. Assim o usuário mantém as duas opções.
       input.setAttribute("accept", "image/*");
-      input.setAttribute("title", "Escolha uma foto da galeria ou dos arquivos do dispositivo");
     });
   }
 
@@ -155,13 +151,8 @@
   function start() {
     refreshDailyUI();
     scheduleMidnightReset();
-    setInterval(refreshDailyUI, 1000);
-
-    const observer = new MutationObserver(() => {
-      fixPhotoInput();
-      syncMealTimes();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+    // Periodicidade leve para refletir alterações feitas pelo editor sem MutationObserver.
+    window.setInterval(refreshDailyUI, 2500);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start, { once: true });
