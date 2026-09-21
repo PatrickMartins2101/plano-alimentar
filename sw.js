@@ -1,5 +1,5 @@
-/* PLANO ALIMENTAR — SERVICE WORKER V23 */
-const CACHE_NAME = "plano-alimentar-pwa-v23";
+/* PLANO ALIMENTAR — SERVICE WORKER V24 */
+const CACHE_NAME = "plano-alimentar-pwa-v24";
 const BASE = "/plano-alimentar/";
 const CORE_ASSETS = [
   BASE,
@@ -59,6 +59,24 @@ self.addEventListener("fetch", event => {
 
   if (event.request.mode === "navigate") {
     event.respondWith(getAppPage(event.request));
+    return;
+  }
+
+  // Recursos JavaScript do aplicativo devem buscar a versão publicada quando
+  // houver rede. Isso evita que uma versão antiga do PWA mantenha correções
+  // recentes presas no cache. Em caso de falha, ainda usamos o cache local.
+  if (url.pathname.endsWith(".js")) {
+    event.respondWith(
+      fetch(event.request, { cache: "no-store" })
+        .then(response => {
+          if (response && response.status === 200) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy)).catch(() => {});
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request).then(cached => cached || caches.match(BASE + "index.html")))
+    );
     return;
   }
 
