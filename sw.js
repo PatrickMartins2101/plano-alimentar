@@ -1,4 +1,4 @@
-const CACHE_NAME="plano-alimentar-pwa-v16";
+const CACHE_NAME="plano-alimentar-pwa-v15";
 const BASE="/plano-alimentar/";
 const CORE_ASSETS=[BASE,BASE+"index.html",BASE+"manifest.webmanifest",BASE+"icons/icon-192.png",BASE+"icons/icon-512.png",BASE+"icons/icon-maskable-192.png",BASE+"icons/icon-maskable-512.png",BASE+"painel-geral.js",BASE+"editor-plano.js",BASE+"meta-atividade.js",BASE+"atividade.js",BASE+"agua.js",BASE+"calendario.js",BASE+"fotos-evolucao.js",BASE+"backup-restauracao.js",BASE+"notificacoes.js",BASE+"receita-foto-ocr.js"];
 self.addEventListener("install",event=>event.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(CORE_ASSETS)).then(()=>self.skipWaiting())));
