@@ -39,6 +39,21 @@
 
   function emptyWaterDay() { return { total: 0, entries: [] }; }
 
+  function resetChecklistUI() {
+    const root = document.getElementById("checklistDiarioV2");
+    if (!root) return;
+    root.querySelectorAll("[data-check]").forEach(el => {
+      el.classList.remove("done");
+      el.setAttribute("aria-pressed", "false");
+    });
+    const p = root.querySelector("#cdPercent");
+    const c = root.querySelector("#cdCount");
+    const b = root.querySelector("#cdBar");
+    if (p) p.textContent = "0%";
+    if (c) c.textContent = "0/6";
+    if (b) b.style.width = "0%";
+  }
+
   function resetDailyStoresIfNeeded() {
     const today = localKey();
 
@@ -61,6 +76,7 @@
     const check = read(CHECK_KEY, {});
     if (check.data !== today) {
       write(CHECK_KEY, { data: today, itens: {} });
+      resetChecklistUI();
       window.dispatchEvent(new CustomEvent("planoAlimentar:checklistNovoDia"));
     }
   }
@@ -139,9 +155,6 @@
   function start() {
     refreshDailyUI();
     scheduleMidnightReset();
-
-    // O editor salva no localStorage na mesma aba, então o evento storage não é suficiente.
-    // A verificação curta garante que qualquer alteração de horário apareça em todos os pontos.
     setInterval(refreshDailyUI, 1000);
 
     const observer = new MutationObserver(() => {
