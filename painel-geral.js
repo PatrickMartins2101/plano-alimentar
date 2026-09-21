@@ -5,7 +5,7 @@
 (() => {
   "use strict";
   const WATER_KEY="planoAlimentar_hidratacao_v1", ACTIVITY_KEY="planoAlimentar_atividade_v1", CHECKLIST_KEY="planoAlimentar_checklist_v2", PROFILE_KEY="planoAlimentar_perfil_v1", WEIGHT_KEY="planoAlimentar_peso_v1", PANEL_ID="painelGeralFinal";
-  function hoje(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0`)}`}
+  function hoje(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
   function ler(k,p){try{const v=localStorage.getItem(k);return v?JSON.parse(v):p}catch{return p}}
   function limitar(v){return Math.max(0,Math.min(100,Math.round(v||0)))}
   function agua(){const s=ler(WATER_KEY,{goal:2500,days:{}}),d=s.days?.[hoje()]||{total:0},total=Number(d.total||0),meta=Number(s.goal||2500);return{total,meta,pct:limitar(total/meta*100)}}
