@@ -1,5 +1,10 @@
 /* INTEGRAÇÃO FINAL V7 — horários do plano + metas do dashboard
-   Camada leve e segura: não substitui módulos existentes.
+   Correção V8:
+   - sincroniza horário sem apagar o ícone do cabeçalho;
+   - evita escrita repetitiva no DOM quando nada mudou;
+   - mantém as substituições funcionando por delegação de eventos;
+   - modal de substituições recebe prioridade visual;
+   - preserva as integrações de metas e horários.
 */
 (() => {
   "use strict";
@@ -9,6 +14,7 @@
   const WATER_KEY = "planoAlimentar_hidratacao_v1";
   const ACTIVITY_KEY = "planoAlimentar_atividade_v1";
   const PROFILE_KEY = "planoAlimentar_perfil_v1";
+
   const DEFAULTS = {
     cafe: { title: "Café da manhã", time: "07:30", icon: "☀️" },
     almoco: { title: "Almoço", time: "12:00", icon: "🍽️" },
@@ -36,9 +42,10 @@
     const edited = editorState().meals?.[id];
     const base = DEFAULTS[id];
     if (!base) return null;
+    const editedTime = String(edited?.time || base.time).match(/\d{2}:\d{2}/)?.[0];
     return {
       title: String(edited?.title || base.title),
-      time: String(edited?.time || base.time).match(/\d{2}:\d{2}/)?.[0] || base.time,
+      time: editedTime || base.time,
       icon: String(edited?.icon || base.icon)
     };
   }
@@ -46,26 +53,45 @@
   function syncPlanTimes() {
     const nav = document.getElementById("nav");
     const ids = Object.keys(DEFAULTS);
+    let changed = false;
 
     ids.forEach((id, index) => {
       const m = mealData(id);
       if (!m) return;
+
       const section = document.getElementById(id);
       if (section) {
         const time = section.querySelector(".time");
         const title = section.querySelector(".meal-head h2");
-        if (time) time.textContent = m.time;
-        if (title) title.textContent = m.title;
+
+        // IMPORTANTE: o ícone faz parte do mesmo elemento .time.
+        // A versão anterior escrevia apenas m.time e apagava o ícone
+        // a cada ciclo de sincronização.
+        const expectedTime = `${m.icon} ${m.time}`;
+        if (time && time.textContent !== expectedTime) {
+          time.textContent = expectedTime;
+          changed = true;
+        }
+        if (title && title.textContent !== m.title) {
+          title.textContent = m.title;
+          changed = true;
+        }
       }
 
       if (nav) {
         const button = nav.querySelectorAll("button")[index + 1];
-        if (button) button.textContent = `${m.icon} ${m.time} — ${m.title}`;
+        const expectedNav = `${m.icon} ${m.time} — ${m.title}`;
+        if (button && button.textContent !== expectedNav) {
+          button.textContent = expectedNav;
+          changed = true;
+        }
       }
     });
 
-    // Reenvia um evento para módulos que acompanham o plano.
-    window.dispatchEvent(new CustomEvent("planoAlimentar:horariosSincronizados"));
+    // Só dispara o evento quando houve uma alteração real.
+    if (changed) {
+      window.dispatchEvent(new CustomEvent("planoAlimentar:horariosSincronizados"));
+    }
   }
 
   function goalValues() {
@@ -85,8 +111,6 @@
     const root = document.getElementById("dashboardProgressao");
     if (!root) return;
 
-    // O dashboard oficial já possui este módulo. Só recuperamos se alguma
-    // versão/camada antiga tiver removido a área de metas.
     if (root.querySelector(".dp4goals")) {
       if (!root.dataset.range) root.dataset.range = "7";
       return;
@@ -117,16 +141,97 @@
     if (btn && !btn.classList.contains("on")) btn.click();
   }
 
+  function parseSubstitutions(button) {
+    const raw = button?.getAttribute("data-subs") || "[]";
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (_) {
+      // Fallback defensivo para dados antigos eventualmente mal codificados.
+      return raw
+        .replace(/^\[|\]$/g, "")
+        .split(/\s*,\s*/)
+        .map(v => v.replace(/^['\"]|['\"]$/g, "").trim())
+        .filter(Boolean);
+    }
+  }
+
+  function openSubstitutionModal(button) {
+    const modal = document.getElementById("modal");
+    const title = document.getElementById("modalTitle");
+    const body = document.getElementById("modalBody");
+    if (!modal || !title || !body) return false;
+
+    const subs = parseSubstitutions(button);
+    if (!subs.length) return false;
+
+    title.textContent = "Opções de substituição";
+    body.replaceChildren();
+    subs.forEach(sub => {
+      const item = document.createElement("div");
+      item.className = "subitem";
+      item.textContent = `• ${sub}`;
+      body.appendChild(item);
+    });
+    modal.classList.add("show");
+    document.body.classList.add("substitution-modal-open");
+    return true;
+  }
+
+  function installSubstitutionFix() {
+    if (window.__substitutionFixV8Installed) return;
+    window.__substitutionFixV8Installed = true;
+
+    // API global robusta para compatibilidade com os onclick existentes.
+    window.showSubs = openSubstitutionModal;
+    window.closeModal = function () {
+      const modal = document.getElementById("modal");
+      if (modal) modal.classList.remove("show");
+      document.body.classList.remove("substitution-modal-open");
+    };
+
+    // Delegação em capture: continua funcionando mesmo se algum módulo
+    // reconstruir um card ou botão posteriormente.
+    document.addEventListener("click", event => {
+      const button = event.target?.closest?.("button.swap");
+      if (!button) return;
+      event.preventDefault();
+      event.stopPropagation();
+      openSubstitutionModal(button);
+    }, true);
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") window.closeModal();
+    });
+
+    const styleId = "substitution-fix-v8-style";
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement("style");
+      style.id = styleId;
+      style.textContent = `
+        #modal{z-index:9999!important;pointer-events:none}
+        #modal.show{display:flex!important;pointer-events:auto!important}
+        #modal .modal-box{position:relative;z-index:10000}
+        body.substitution-modal-open{overflow:hidden}
+      `;
+      document.head.appendChild(style);
+    }
+  }
+
   function run() {
     syncPlanTimes();
     ensureDashboardGoals();
     forceDashboard7Days();
+    installSubstitutionFix();
   }
 
   function start() {
     run();
     setTimeout(run, 400);
     setTimeout(run, 1200);
+
+    // A atualização continua existindo para refletir alterações feitas pelo
+    // editor, mas agora não reescreve o DOM quando nada mudou.
     setInterval(run, 1500);
     window.addEventListener("storage", run);
     window.addEventListener("planoAlimentar:planoAtualizado", run);
